@@ -23,7 +23,7 @@ export const appConfig = (app) =>{
 
     app.use(cors({
         credentials: true,
-        origin: (process.env.NODE_ENV === 'production' ? ('') : (['http://10.0.0.8:3000','http://localhost:63342','127.0.0.1:5500']))
+        origin: (process.env.NODE_ENV === 'production' ? ('') : (['http://10.0.0.8:3000','http://localhost:63342','http://127.0.0.1:5500']))
 
     }));
     process.env.NODE_ENV === 'dev' && app.use(morgan("common"));
