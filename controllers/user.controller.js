@@ -12,7 +12,7 @@ export const userGetAllItems = async (req,res) =>{
 
     try{
 
-        const items = await Item.find();
+        const items = await Item.find().populate('category');
 
         res.status(200).json(items)
 
@@ -33,7 +33,7 @@ export const userGetItemById = async (req,res) =>{
         const {itemId} = req.params
 
 
-        const item = await Item.findById(itemId);
+        const item = await Item.findById(itemId).populate('category');
 
 
         res.status(200).json(item === null ? {message:'no item found'} : {item})
