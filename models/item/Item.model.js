@@ -25,7 +25,7 @@ export const ItemSchema = new Schema({
             type: String,
             required: true,
             minLength: 2,
-            maxLength: 25
+            maxLength: 256
         },
         category: {
             type: Schema.Types.ObjectId,
