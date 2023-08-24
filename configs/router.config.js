@@ -2,9 +2,6 @@ import {verifyAdmin} from "../middleware/admin.middleware.js";
 import {verifyUser} from "../middleware/user.middleware.js";
 import {
     userCreateOrder,
-    userGetAllItems, userGetItemByCategoryAndPrice,
-    userGetItemById,
-    userGetItemsByCategory,
 } from "../controllers/user.controller.js";
 import {
     adminAddItem,
@@ -18,6 +15,7 @@ import {signIn, signOut, signUp} from "../controllers/auth.controller.js";
 import {adminEndpoints} from "./endpoints.config/admin.endpoints.js";
 import {userEndpoints} from "./endpoints.config/user.endpoints.js";
 import {authEndpoints} from "./endpoints.config/auth.endpoints.js";
+import {publicEndpoints} from "./endpoints.config/public.endpoints.js";
 
 
 export const routes = [
@@ -32,6 +30,12 @@ export const routes = [
         api: 'user',
         middleware: verifyUser,
         endpoints: userEndpoints
+    },
+    {
+        name: 'public',
+        api: 'public',
+        middleware: verifyPublic,
+        endpoints: publicEndpoints
     },
     {
         name: 'auth',
