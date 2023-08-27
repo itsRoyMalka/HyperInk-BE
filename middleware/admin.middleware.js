@@ -5,11 +5,13 @@ export const verifyAdmin =async (req, res,next)=>{
 
     try{
 
-        const {token} = await req.cookies;
+        const authorizationHeader = req.headers['authorization'];
 
-        if(!token){
-            return res.status(403).json({message: "JWT missing"})
+        if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+            return res.status(403).json({ message: 'JWT missing or invalid format' });
         }
+
+        const token = authorizationHeader.slice(7);
 
 
         await jwt.verify(token, process.env.JWT_SECRET, {}, async (err, data) => {
