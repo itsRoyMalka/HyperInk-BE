@@ -33,7 +33,7 @@ export const signIn = async (req,res) =>{
                 }
 
 
-                return res.status(201).cookie('token', token).json({message: "Sign in successfully", token: token})
+                return res.status(201).cookie('token', token).json({message: "Sign in successfully", isAdmin: user.isAdmin})
 
             })
 
