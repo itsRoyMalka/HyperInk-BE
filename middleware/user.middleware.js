@@ -4,6 +4,7 @@ import User from "../models/user/User.model.js";
 export const verifyUser = async (req, res, next) => {
     try {
 
+
         const authorizationHeader = req.headers['authorization'];
 
         if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {

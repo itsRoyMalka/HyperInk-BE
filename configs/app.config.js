@@ -23,7 +23,7 @@ export const appConfig = (app) =>{
 
     app.use(cors({
         credentials: true,
-        origin: (process.env.NODE_ENV === 'production' ? ('') : (['http://10.0.0.8:3000','http://localhost:63342','http://127.0.0.1:5500','file:///Users/roymalka/']))
+        origin: (process.env.NODE_ENV === 'production' ? ('') : (['http://10.0.0.8:3000','http://localhost:63342','http://127.0.0.1:5500','https://hyperink-4pzm.onrender.com']))
 
     }));
 
