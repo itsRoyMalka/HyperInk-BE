@@ -74,25 +74,32 @@ export const publicGetItemsByCategory = async (req,res) =>{
 // @params none
 // @body category name, minimum price, maximum price
 // @return array of items
-export const publicGetItemByCategoryAndPrice = async (req,res) =>{
+export const publicGetItemByCategoryAndPrice = async (req, res) => {
+    try {
+        const { params, categoryName, minPrice, maxPrice } = req.body;
 
-    try{
+        console.log(params)
+        let query = {};
 
-        const {categoryName, minPrice, maxPrice} = req.body
-
-        let existCategory = await Category.findOne({name: categoryName})
-
-        if(!existCategory){
-            return res.status(200).json({message: "Category not exist"})
+        if (categoryName !== 'all') {
+            query.category = await Category.findOne({ name: categoryName });
         }
 
-        let items = await Item.find()
+        if (minPrice !== undefined && maxPrice !== undefined) {
+            query.price = { $gte: minPrice, $lte: maxPrice };
+        }
 
-        items = await items.filter(item=>item.category !== existCategory).filter(item=>(item.price >= minPrice && item.price <= maxPrice))
+        if (params) {
 
-        res.status(200).json(items)
+            query.name = { $regex: new RegExp(params, 'i') };
+        }
 
-    }catch(error){
-        res.status(500).json({error: error.message})
+        const items = await Item.find(query).populate('category');
+
+        res.status(200).json(items);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-}
+};
+
+

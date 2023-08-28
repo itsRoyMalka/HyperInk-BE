@@ -10,66 +10,63 @@ import Order from "../models/order/Order.model.js";
 // @params none
 // @body { items: [ {"id": id, quantity: 3}, {...another}]}
 // @return none
-export const userCreateOrder = async (req,res) =>{
+export const userCreateOrder = async (req, res) => {
+    try {
+        const cartData = req.body;
+        const user = req.user;
 
-    //looks like shit, but works. do not touch
-    try{
+        // Extract itemIds from cartData
+        const itemIds = cartData.map(item => item.itemId);
 
-        //items is array of id's and quantity example: { items: [ {"id": id, quantity: 3}, {...rest}]}
-        const {items} = req.body
-
-        const user = req.user
-
-        const itemIds = await items.map(item=>item.id)
-
-        //validate
+        // Validate if all items in cartData exist
         const itemsFound = await Item.find({ _id: { $in: itemIds } });
 
-        if(itemsFound.length !== items.length){
-            return res.status(400).json({message: "Not a valid order, 1 or more items not exists"})
+        if (itemsFound.length !== cartData.length) {
+            return res.status(400).json({ message: "Not a valid order, one or more items do not exist" });
         }
 
-        let isValid = true
+        let isValid = true;
 
-        //quantity validation
-        await itemsFound.map(item=>{
-            items.map(it=>{
-                if(it.quantity < 1 || item.quantity < it.quantity){
-                    isValid = false
+        // Quantity validation
+        for (const item of cartData) {
+            const matchingItem = itemsFound.find(foundItem => foundItem._id.equals(item.itemId));
 
-                }else{
-                    item.quantity -= it.quantity
-                }
-            })
-        })
-
-        if(!isValid){
-            return res.status(400).json({message: "Not a valid order, not enough quantity"})
+            if (!matchingItem || matchingItem?.quantity < item?.quantity) {
+                isValid = false;
+                break;
+            }
         }
 
-      await Promise.all(
-          itemsFound.map(item=> item.save())
-      )
+        if (!isValid) {
+            return res.status(400).json({ message: "Not a valid order, not enough quantity for one or more items" });
+        }
 
+        // Deduct item quantities and save
+        for (const item of cartData) {
+            const matchingItem = itemsFound.find(foundItem => foundItem._id.equals(item.itemId));
+            matchingItem.quantity -= item.quantity;
+            await matchingItem.save();
+        }
+
+        // Create the order
+        const orderItems = cartData.map(item => item.itemId);
         const order = await Order.create({
             user,
             date: Date.now(),
-            items: items.map(item=>{
-                return item.id
-            })
-        })
+            items: orderItems
+        });
 
-        user.orders.push(order)
-        user.save()
+        // Update user's orders
+        user.orders.push(order);
+        await user.save();
 
-
-
-        return res.status(200).json({message: "Order created Successfully"})
-
-    }catch(error){
-        res.status(500).json({error: error.message})
+        return res.status(200).json({ message: "Order created Successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
     }
-}
+};
+
 
 
 // @desc get all user orders
