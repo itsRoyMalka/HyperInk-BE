@@ -1,6 +1,6 @@
 import {
     adminAddItem, adminDeleteCategory,
-    adminDeleteItem, adminGetAllOrders,
+    adminDeleteItem, adminGetAllOrders, adminGetStats,
     adminUpdateCategory,
     adminUpdateItem
 } from "../../controllers/admin.controller.js";
@@ -41,6 +41,12 @@ export const adminEndpoints = [
         method: 'get',
         endpoint: 'get-all-orders',
         controller: adminGetAllOrders
+    },
+    {
+        name: 'get stats',
+        method: 'get',
+        endpoint: 'get-stats',
+        controller: adminGetStats
     },
 
 ]

@@ -174,3 +174,55 @@ export const adminGetAllOrders = async (req,res) =>{
         return res.status(500).json({error: error.message})
     }
 }
+
+export const adminGetStats = async (req, res) => {
+    try {
+        const orders = await Order.find().populate('items');
+
+        let totalItemPrice = 0;
+        let totalItemCount = 0;
+
+
+        const statsByDate = {};
+
+
+        orders.forEach(order => {
+
+            order.items.forEach(item => {
+                totalItemPrice += item.price;
+                totalItemCount++;
+
+
+                const orderDate = order.date.toDateString();
+
+
+                if (!statsByDate[orderDate]) {
+                    statsByDate[orderDate] = {
+                        totalPrice: 0,
+                        itemCount: 0,
+                    };
+                }
+
+
+                statsByDate[orderDate].totalPrice += item.price;
+                statsByDate[orderDate].itemCount++;
+            });
+        });
+
+
+        const avgPrice = totalItemPrice / totalItemCount;
+
+
+        const totalRevenue = totalItemPrice;
+
+        const stat = {
+            avgPrice,
+            totalRevenue,
+            statsByDate,
+        };
+
+        return res.status(200).json(stat);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
